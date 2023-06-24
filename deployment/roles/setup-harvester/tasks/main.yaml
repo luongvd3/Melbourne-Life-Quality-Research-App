@@ -1,0 +1,113 @@
+---
+- name: Copy aurin data to cluster
+  become: yes
+  copy:
+    src: "{{ playbook_dir }}/../aurin"
+    dest: "/home/{{ ansible_user }}"
+  when: IpAdd == groups.couchdb[0]
+
+- name: Copy shell file to load aurin data into couchdb
+  become: yes
+  ansible.builtin.template:
+    src: load_aurin_data.sh.j2
+    dest: "/home/{{ ansible_user }}/load_aurin_data.sh"
+    mode: a+x
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  when: IpAdd == groups.couchdb[0]
+
+- name: Load aurin data into couchdb
+  become: yes
+  command: ./load_aurin_data.sh
+  args:
+    chdir: "/home/{{ ansible_user }}"
+  when: IpAdd == groups.couchdb[0]
+
+- name: Create harvester directory
+  become: yes
+  ansible.builtin.file:
+    path: "{{ harvester_dir }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    recurse: yes
+    state: directory
+
+- name: Copy harvester files
+  become: yes
+  copy:
+    src: "{{ playbook_dir }}/../harvester"
+    dest: "{{ harvester_dir }}"
+
+- name: Create tweet_processor directory
+  become: yes
+  ansible.builtin.file:
+    path: "{{ tweet_processor_dir }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    recurse: yes
+    state: directory
+
+- name: Copy tweet_processor files
+  become: yes
+  copy:
+    src: "{{ playbook_dir }}/../tweet_processor"
+    dest: "{{ tweet_processor_dir }}"
+
+- name: Copy shell file to create view over processed data
+  become: yes
+  ansible.builtin.template:
+    src: load_view.sh.j2
+    dest: "{{ tweet_processor_dir }}/design_docs/load_aurin_data.sh"
+    mode: a+x
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  when: IpAdd == groups.couchdb[0]
+
+- name: Create the view to summarise processed data
+  become: yes
+  command: ./load_aurin_data.sh
+  args:
+    chdir: "{{ tweet_processor_dir }}/design_docs"
+  when: IpAdd == groups.couchdb[0]
+
+- name: IP Address
+  set_fact:
+    IpAdd: "{{ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0])}}"
+
+- name: Build an image for the harvester
+  become: yes
+  community.docker.docker_image:
+    build:
+      path: "{{ harvester_dir }}/harvester"
+      dockerfile: Dockerfile
+    name: harvester
+    tag: v1
+    source: build
+
+- name: Build an image for the tweet processor
+  become: yes
+  community.docker.docker_image:
+    build:
+      path: "{{ tweet_processor_dir }}/tweet_processor"
+      dockerfile: Dockerfile
+    name: tweet_processor
+    tag: v1
+    source: build
+
+- name: Configure compose
+  become: yes
+  ansible.builtin.template:
+    src: docker-compose.yaml.j2
+    dest: "{{ harvester_dir }}/docker-compose.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Run docker compose on root node to load the harvester
+  become: yes
+  community.docker.docker_compose:
+    project_src: "{{ harvester_dir }}"
+    state: present
+    remove_orphans: yes
+    recreate: always
+    pull: no
+  when: IpAdd == groups.couchdb[0]

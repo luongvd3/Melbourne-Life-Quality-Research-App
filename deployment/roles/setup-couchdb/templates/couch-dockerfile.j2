@@ -1,0 +1,22 @@
+FROM couchdb
+
+COPY init.sh /opt/couchdb/innit.sh
+COPY cluster.sh /opt/couchdb/cluster.sh
+COPY databases.sh /opt/couchdb/databases.sh
+COPY --chown=couchdb:couchdb local.ini /opt/couchdb/etc/local.ini
+COPY --chown=couchdb:couchdb vm.args /opt/couchdb/etc/vm.args
+
+# install erlang
+RUN apt update; \
+    apt-get install wget; \
+    apt install software-properties-common apt-transport-https; \
+    yes Y | wget -O- https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc | apt-key add -*; \
+    echo "deb https://packages.erlang-solutions.com/ubuntu focal contrib" | tee /etc/apt/sources.list.d/erlang.list; \
+    apt update; \
+    yes Y | apt install erlang
+
+# install jq
+RUN yes Y | apt-get install jq
+RUN yes Y | apt-get install sudo
+
+EXPOSE 5984 4369 9100-9200
