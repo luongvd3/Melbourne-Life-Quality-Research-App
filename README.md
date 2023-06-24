@@ -2,7 +2,7 @@
 This project is designed to be deployed on an OpenStack cloud service
 
 ### Requirements
-python 3.8.9 
+python 3.8.9 \
 ansible 2.9
 
 ## API Documentation
@@ -11,7 +11,6 @@ Swagger is running on http://localhost:5000/docs
 ## Set up .env file 
 Please create a .env file using the following variable names.  
 Replace IP and PORT with the actual IP address and Port number of the couchDB node  
-Need to use unimelb VPN to connect to DB. 
 
 DEBUG=TRUE  
 FLASK_ENV=development  
@@ -25,8 +24,6 @@ TWITTER_ACCESS_TOKEN=
 TWITTER_ACCESS_SECRET=  
 
 ## Deployment 
-Download the OpenStack RC file from the cloud provider
-
-Replace './unimelb-COMP90024-2022-grp-24-openrc.sh;' in deployment/run-deployment.sh to the OpenStack RC file
-
+Download the OpenStack RC file from the cloud provider\
+Replace './unimelb-COMP90024-2022-grp-24-openrc.sh;' in deployment/run-deployment.sh to the OpenStack RC file\
 run /run-deployment.sh
