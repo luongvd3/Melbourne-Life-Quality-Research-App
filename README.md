@@ -5,9 +5,6 @@ This project is designed to be deployed on an OpenStack cloud service
 python 3.8.9 \
 ansible 2.9
 
-## API Documentation
-Swagger is running on http://localhost:5000/docs  
-
 ## Set up .env file 
 Please create a .env file using the following variable names.  
 Replace IP and PORT with the actual IP address and Port number of the couchDB node  
