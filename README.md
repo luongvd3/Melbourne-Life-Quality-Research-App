@@ -1,20 +1,9 @@
-# Cloud_A2
+# Melbourne Quality of Life Research App
+This project is designed to be deployed on an OpenStack cloud service
 
-### Team Information
-
-Melbourne - 17th of May 2022
-
-Team 24
-
-Julius Kerstien 1016442  
-Zack Chen-McCaig 1221476  
-Tom Lin 1229008  
-Harry Tran 1124415  
-James Kerlidis 912988  
-
-
-### Python version
-python 3.8.9  
+### Requirements
+python 3.8.9 
+ansible 2.9
 
 ## API Documentation
 Swagger is running on http://localhost:5000/docs  
@@ -34,3 +23,8 @@ TWITTER_API_KEY_SECRET=
 TWITTER_BEARER_TOKEN=  
 TWITTER_ACCESS_TOKEN=  
 TWITTER_ACCESS_SECRET=  
+
+## Deployment 
+Download the OpenStack RC file from the cloud provider
+Replace './unimelb-COMP90024-2022-grp-24-openrc.sh;' in deployment/run-deployment.sh to the OpenStack RC file
+run /run-deployment.sh
