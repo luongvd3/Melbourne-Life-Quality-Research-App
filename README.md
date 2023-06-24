@@ -26,5 +26,7 @@ TWITTER_ACCESS_SECRET=
 
 ## Deployment 
 Download the OpenStack RC file from the cloud provider
+
 Replace './unimelb-COMP90024-2022-grp-24-openrc.sh;' in deployment/run-deployment.sh to the OpenStack RC file
+
 run /run-deployment.sh
